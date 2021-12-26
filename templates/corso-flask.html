@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if nome_scuola == 'cairoli' %}
+    <h2> Questo è il corso di informatica della scuola  {{nome_scuola}} </h2>
+    <br/>
+    <p>Lista delle lezioni:</p>
+    <ul>
+        <li>Lezione 1: Elementi base di python</li>
+        <li>Lezione 2: Pygame</li>
+        <li>Lezioni 3: Le funzioni</li>
+        <li>Lezione 4: Le classi </li>
+    </ul>
+    <br>
+    <a class="btn btn-primary btn-lg" href="{{url_for('esempio')}}" role="button">Dettagli</a>
+{%elif nome_scuola == 'superiore'%}
+    <h2>Elenco scuole superiori</h2>
+    <ul>
+        {% for superiore in pag_delle_superiori %}  
+        <li>{{superiore}}</li> 
+        {%endfor%}
+    </ul>
+{%else%}
+    <h2>Attenzione!!! Questa non è la tua scuola!!!</h2>
+{%endif%}
+{% endblock content %}

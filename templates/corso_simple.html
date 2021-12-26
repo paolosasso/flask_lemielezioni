@@ -1,0 +1,25 @@
+{% extends "base.html"%}
+{% block content %}
+    <br>
+    <h1>NUOVA LEZIONE</h1>
+
+    <form action="" method="POST"> 
+        {{lesson_simple_form.hidden_tag()}}
+        <br>
+        {{lesson_simple_form.lesson_name.label}}{{lesson_simple_form.lesson_name()}}
+        <br>
+        {{lesson_simple_form.teacher_name.label}}{{lesson_simple_form.teacher_name()}}
+        <br>
+        {{lesson_simple_form.lesson_active.label}}{{lesson_simple_form.lesson_active()}}
+        <br>
+        {{lesson_simple_form.difficulty.label}}{{lesson_simple_form.difficulty()}}
+        {{lesson_simple_form.platform.label}}{{lesson_simple_form.platform()}}
+        <br>
+        {{lesson_simple_form.feedback.label}}{{lesson_simple_form.feedback()}}
+        <br>
+        {{lesson_simple_form.submit()}}
+    </form> 
+    
+    <br>
+    
+{% endblock content %}
