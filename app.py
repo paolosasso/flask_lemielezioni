@@ -57,9 +57,12 @@ class Lezione(db.Model):
 @app.route("/")
 def index():
     lezioni = Lezione.query.all()
-   #oi = "Super!!"
-   #return f"<h1>Ciao {oi}<h1>"
     return render_template ("index-detail.html", lezioni=lezioni )
+
+@app.route("/admin")
+def index_admin():
+    lezioni = Lezione.query.all()
+    return render_template ("index-admin.html", lezioni=lezioni )
 
 @app.route("/corso/<name>")
 def corso_flask(name):
