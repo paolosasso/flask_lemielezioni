@@ -6,6 +6,11 @@ from wtforms import(
     StringField,
     SubmitField
 )
+from flask_simplelogin import SimpleLogin
+from flask_simplelogin import is_logged_in
+
+
+
 
 
 #import requests
@@ -25,7 +30,9 @@ from flask_migrate import Migrate, migrate
 
 # Configuriamo la migrazione
 migrate = Migrate(app, db)
-
+app.config['SIMPLELOGIN_USERNAME'] = 'chuck'
+app.config['SIMPLELOGIN_PASSWORD'] = 'norris'
+SimpleLogin(app)
 
 # Definiamo corsi
 class Lezione(db.Model):
@@ -61,8 +68,11 @@ def index():
 
 @app.route("/admin")
 def index_admin():
-    lezioni = Lezione.query.all()
-    return render_template ("index-admin.html", lezioni=lezioni )
+    if is_logged_in():
+        lezioni = Lezione.query.all()
+        return render_template ("index-admin.html", lezioni=lezioni )
+    else:
+        return render_template ("404.html"), 404
 
 @app.route("/corso/<name>")
 def corso_flask(name):
