@@ -8,10 +8,8 @@ from wtforms import(
 )
 from flask_simplelogin import SimpleLogin
 from flask_simplelogin import is_logged_in
-
-
-
-
+import os
+from dotenv import load_dotenv
 
 #import requests
 
@@ -30,8 +28,12 @@ from flask_migrate import Migrate, migrate
 
 # Configuriamo la migrazione
 migrate = Migrate(app, db)
-app.config['SIMPLELOGIN_USERNAME'] = 'chuck'
-app.config['SIMPLELOGIN_PASSWORD'] = 'norris'
+load_dotenv()
+user = os.environ['USER']
+passw = os.environ['PASSW']
+
+app.config['SIMPLELOGIN_USERNAME'] = user
+app.config['SIMPLELOGIN_PASSWORD'] = passw
 SimpleLogin(app)
 
 # Definiamo corsi
