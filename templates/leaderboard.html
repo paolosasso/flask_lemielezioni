@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nome del giocatore</th>
+            <th scope="col">Click Ottenuti</th>
+            <th scope="col">CPS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in lezioni %}
+            <tr>
+            <th scope="row">{{data.id}}</th>
+            <td>{{ data.nome }}</td>
+            <td>{{ data.click }}</td>
+            <td>{{ data.cps }}</td>
+            {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    
+
+{% endblock content %}

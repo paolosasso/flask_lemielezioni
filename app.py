@@ -4,7 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import(
     StringField,
-    SubmitField
+    SubmitField,
+    IntegerField
 )
 from flask_simplelogin import SimpleLogin
 from flask_simplelogin import is_logged_in
@@ -28,7 +29,9 @@ from flask_migrate import Migrate, migrate
 
 # Configuriamo la migrazione
 migrate = Migrate(app, db)
+
 load_dotenv()
+
 user = os.environ['USER']
 passw = os.environ['PASSW']
 
@@ -44,50 +47,33 @@ class Lezione(db.Model):
 
     #definiamo la struttira della tabella
     id = db.Column(db.Integer, primary_key=True)
-    lesson_name = db.Column(db.Text)
-    teacher_name = db.Column(db.Text)
+    nome = db.Column(db.Text)
+    click = db.Column(db.Integer)
+    cps = db.Column(db.Integer)
 
     # definiamo il costruttore
-    def __init__(self, lesson_name, teacher_name):
-        self.lesson_name = lesson_name
-        self.teacher_name = teacher_name
+    def __init__(self, nome, click, cps):
+        self.nome = nome
+        self.click = click
+        self.cps = cps
 
     # rappresentiamo l'oggetto stampato
     def __repr__(self):
-        message = f"\n Corso: {self.lesson_name} insegnato da: {self.teacher_name} con id: {self.id}"
+        message = f"\n Nome: {self.nome} Click: {self.click} CPS: {self.cps}"
         return message
 
-#@app.route("/")
-#def index():
-  # oi = "Super!!"
-#   return f"<h1>Ciao {oi}<h1>"
-#    return render_template ("base.html")
-
-@app.route("/")
+@app.route("/leaderboard")
 def index():
     lezioni = Lezione.query.all()
-    return render_template ("index-detail.html", lezioni=lezioni )
+    return render_template ("leaderboard.html", lezioni=lezioni )
 
 @app.route("/admin")
 def index_admin():
     if is_logged_in():
         lezioni = Lezione.query.all()
-        return render_template ("index-admin.html", lezioni=lezioni )
+        return render_template ("leaderboard_admin.html", lezioni=lezioni )
     else:
         return render_template ("404.html"), 404
-
-@app.route("/corso/<name>")
-def corso_flask(name):
-    lista_scuole_sup = ["liceo","tecnico","professionale"]
-    return render_template ("corso-flask.html",nome_scuola=name,pag_delle_superiori=lista_scuole_sup)
-
-@app.route("/info/")
-def info():
-    return f"<h2>Queste sono belle info<h2>"
-
-@app.route("/info/<name>")#127.0.0.1:5000/info/andrea
-def nome_ok(name):
-    return f"<h2>Il mio nome: {name} <h2>"
 
 #@app.route("/info-errore/<name>")
 @app.errorhandler(404)
@@ -95,49 +81,33 @@ def page_not_found(error):
  #   return f"<h2>Generiamo un errore:<h2>".format(name[9])
     return render_template ("404.html"), 404
 
-"""
-@app.route("/course/created/")
-def course_created():
-    corso_name = ""
-    corso_subject = ""
-    return render_template("course_created.html", corso_name=corso_name,
-    corso_subject=corso_subject)
-"""
-
-### semplice form
-@app.route("/course/new/",methods=["GET", "POST"])
-def new_course():
-    lesson_name = request.args.get("lesson-name")
-    teacher_name = request.args.get("teacher-name")
-    return render_template(
-       "course_new.html" , lesson_name=lesson_name, teacher_name=teacher_name)
-    
-
-
-### form avanzato
 class FormLezioneBase(FlaskForm):
-    lesson_name = StringField("Nome della lezione")
-    teacher_name = StringField("Insegnante")
+    nome = StringField("Nome")
+    click = IntegerField("Click")
+    cps = IntegerField("CPS")
     submit = SubmitField("Submit")
 
-@app.route("/lezione/prova/", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def advance_form():
-    lesson_name = False
-    teacher_name  = False
+    nome = False
+    click  = False
+    cps = False
     form = FormLezioneBase()
 
     # logica del form
     if form.validate_on_submit():
-        lesson_name = form.lesson_name.data
-        teacher_name = form.teacher_name.data
-        
+        nome = form.nome.data
+        click = form.click.data
+        cps = form.cps.data
+    
         #add db session
-        l = Lezione(lesson_name=lesson_name, teacher_name=teacher_name)
+        l = Lezione(nome=nome, click=click, cps=cps)
         db.session.add(l)
         
         #reset
-        form.lesson_name.data = ""
-        form.teacher_name.data = ""
+        form.nome.data = ""
+        form.click.data = ""
+        form.cps.data = ""
         
         #commit
         db.session.commit()
@@ -146,7 +116,7 @@ def advance_form():
 
     
     return render_template(
-        "lezione.html",
+        "index.html",
         lesson_form=form,
         #lesson=lesson_name,
         #teacher=teacher_name,
@@ -154,29 +124,17 @@ def advance_form():
         )
 
 
-
 @app.route('/delete/<int:id>')
 def cancella(id):
-     
+    if is_logged_in():
     # deletes the data on the basis of unique id and
     # directs to home page
-    l = Lezione.query.get(id)
-    db.session.delete(l)
-    db.session.commit()
-    return redirect('/')
+        l = Lezione.query.get(id)
+        db.session.delete(l)
+        db.session.commit()
+        return redirect('/')
+    else:
+        return redirect('/404')
 
-
-""" create the app for access free api
-
-url = "http://universities.hipolabs.com/search?country=Italy"
-
-response = requests.get(url)
-
-@app.route("/univers/list/")
-def show_univers():
-    univers = response.json()
-    return render_template("show_university.html", univers = univers)
-
-"""
 if __name__ == "__main__":
     app.run(debug=True)
